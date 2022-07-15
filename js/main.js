@@ -132,8 +132,11 @@ function moveDown() {
 
             nextEl.style.left = nextLeftPos + "px"
         } else {
-            var nextTopPos = el.offsetTop
+            console.log('coool')
+            var nextTopPos = nextEl.offsetTop
+            nextTopPos += boxSize
             nextEl.style.top = nextTopPos + "px"
+            nextEl.style.left = left + "px"
         }
     }
 
