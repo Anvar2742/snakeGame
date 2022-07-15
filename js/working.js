@@ -1,5 +1,5 @@
 var snake = document.getElementById("snake")
-var snakeHead = snake.childNodes[1]
+var snakeHead = snake.children[0]
 
 var left = 0,
     right = 0,
@@ -7,15 +7,18 @@ var left = 0,
     bottom = 0,
     boxSize = 30,
     borderSize = 2,
-    interval = 200
+    interval = 200,
+    index = 1
 
-for (let i = 0; i < snake.childNodes.length; i++) {
-    const el = snake.childNodes[i]
+var snakeRight, snakeLeft, snakeTop, snakeBottom
+var isSnakeRight, isSnakeLeft, isSnakeTop, isSnakeBottom
+var rightBlocked, leftBlocked, topBlocked, bottomBlocked
+var leftElastic, topElastic
 
-    if (el.nodeType === 1) {
-        el.style.width = boxSize + "px"
-        el.style.height = boxSize + "px"
-    }
+for (let i = 0; i < snake.children.length; i++) {
+    const el = snake.children[i]
+    el.style.width = boxSize + "px"
+    el.style.height = boxSize + "px"
 }
 
 
@@ -63,17 +66,13 @@ function moveRight() {
 
     eatFood()
 
-    for (let i = 2, t = 0, l = 0; i < snake.childNodes.length; i++) {
-        const el = snake.childNodes[i]
+    var nextLeftPos = left
+    for (let i = 0; i < snake.children.length - 1; i++) {
+        const nextEl = snake.children[i + 1]
 
-        if (el.nodeType === 1) {
-            t++
-            l++
-
-            l -= 1
-            el.style.left = left - (boxSize * t) + "px"
-            el.style.top = topPos - (boxSize * l) + "px"
-        }
+        nextLeftPos -= boxSize
+        nextEl.style.left = nextLeftPos + "px"
+        nextEl.style.top = topPos + "px"
     }
 }
 
@@ -87,16 +86,36 @@ function moveLeft() {
 
     eatFood()
 
-    for (let i = 2, t = 0, l = 0; i < snake.childNodes.length; i++) {
-        const el = snake.childNodes[i]
 
-        if (el.nodeType === 1) {
-            t++
-            l++
 
-            l -= 1
-            el.style.left = left + (boxSize * t) + "px"
-            el.style.top = topPos - (boxSize * l) + "px"
+    for (let i = 0; i < snake.children.length - 1; i++) {
+        const el = snake.children[i]
+        const nextEl = snake.children[i + 1]
+
+        var nextTopPos = nextEl.offsetTop
+
+        if (topElastic) {
+            if (nextTopPos != topPos) {
+                nextTopPos -= boxSize
+
+                nextEl.style.top = nextTopPos + "px"
+            } else {
+                var nextLeftPos = nextEl.offsetLeft
+                nextLeftPos -= boxSize
+                nextEl.style.left = nextLeftPos + "px"
+                nextEl.style.top = topPos + "px"
+            }
+        } else {
+            if (nextTopPos != topPos) {
+                nextTopPos += boxSize
+
+                nextEl.style.top = nextTopPos + "px"
+            } else {
+                var nextLeftPos = nextEl.offsetLeft
+                nextLeftPos -= boxSize
+                nextEl.style.top = topPos + "px"
+                nextEl.style.left = nextLeftPos + "px"
+            }
         }
     }
 }
@@ -109,50 +128,84 @@ function moveUp() {
     topPos -= boxSize
     snakeHead.style.top = topPos + "px"
 
-    eatFood()
+    for (let i = 0; i < snake.children.length - 1; i++) {
+        const el = snake.children[i]
+        const nextEl = snake.children[i + 1]
 
-    for (let i = 2, t = 0, l = 0; i < snake.childNodes.length; i++) {
-        const el = snake.childNodes[i]
+        var nextLeftPos = nextEl.offsetLeft
 
-        if (el.nodeType === 1) {
-            t++
-            l++
+        if (leftElastic) {
+            if (nextLeftPos != left) {
+                nextLeftPos -= boxSize
 
-            l -= 1
-            el.style.top = topPos + (boxSize * t) + "px"
-            el.style.left = left + (boxSize * l) + "px"
+                nextEl.style.left = nextLeftPos + "px"
+            } else {
+                var nextTopPos = nextEl.offsetTop
+                nextTopPos -= boxSize
+                nextEl.style.top = nextTopPos + "px"
+                nextEl.style.left = left + "px"
+            }
+        } else {
+            if (nextLeftPos != left) {
+                nextLeftPos += boxSize
+
+                nextEl.style.left = nextLeftPos + "px"
+            } else {
+                var nextTopPos = nextEl.offsetTop
+                nextTopPos -= boxSize
+                nextEl.style.top = nextTopPos + "px"
+                nextEl.style.left = left + "px"
+            }
         }
     }
+
+    eatFood()
 }
+
+// var nextLeftPos = snakeHead.offsetLeft
 
 function moveDown() {
     if (topPos >= gridSize) {
         borderCrash(snakeBottom)
     }
-    
+
     topPos += boxSize
     snakeHead.style.top = topPos + "px"
 
-    eatFood()
 
-    for (let i = 2, t = 0, l = 0; i < snake.childNodes.length; i++) {
-        const el = snake.childNodes[i]
+    for (let i = 0; i < snake.children.length - 1; i++) {
+        const el = snake.children[i]
+        const nextEl = snake.children[i + 1]
 
-        if (el.nodeType === 1) {
-            t++
-            l++
+        var nextLeftPos = nextEl.offsetLeft
 
-            l -= 1
-            el.style.top = topPos - (boxSize * t) + "px"
-            el.style.left = left - (boxSize * l) + "px"
+        if (leftElastic) {
+            if (nextLeftPos != left) {
+                nextLeftPos -= boxSize
+
+                nextEl.style.left = nextLeftPos + "px"
+            } else {
+                var nextTopPos = nextEl.offsetTop
+                nextTopPos += boxSize
+                nextEl.style.top = nextTopPos + "px"
+                nextEl.style.left = left + "px"
+            }
+        } else {
+            if (nextLeftPos != left) {
+                nextLeftPos += boxSize
+
+                nextEl.style.left = nextLeftPos + "px"
+            } else {
+                var nextTopPos = nextEl.offsetTop
+                nextTopPos += boxSize
+                nextEl.style.top = nextTopPos + "px"
+                nextEl.style.left = left + "px"
+            }
         }
     }
+
+    eatFood()
 }
-
-
-var snakeRight, snakeLeft, snakeTop, snakeBottom
-var isSnakeRight, isSnakeLeft, isSnakeTop, isSnakeBottom
-var rightBlocked, leftBlocked, topBlocked, bottomBlocked
 
 document.addEventListener('keydown', (event) => {
     const keyName = event.key
@@ -177,6 +230,9 @@ document.addEventListener('keydown', (event) => {
 
         // Rotate the snake
         snakeHead.style.transform = `rotate(-90deg)`
+
+        // For elastic snake
+        leftElastic = false
     } else if (keyName === "ArrowLeft" && left >= 30 && !isSnakeLeft && !leftBlocked) {
         clearInterval(snakeRight)
         clearInterval(snakeTop)
@@ -196,6 +252,9 @@ document.addEventListener('keydown', (event) => {
 
         // Rotate the snake
         snakeHead.style.transform = `rotate(90deg)`
+
+        // For elastic snake
+        leftElastic = true
     } else if (keyName === "ArrowDown" && topPos < 570 && !isSnakeBottom && !bottomBlocked) {
         clearInterval(snakeTop)
         clearInterval(snakeRight)
@@ -215,6 +274,7 @@ document.addEventListener('keydown', (event) => {
 
         // Rotate the snake
         snakeHead.style.transform = `rotate(0)`
+        topElastic = false
     } else if (keyName === "ArrowUp" && topPos >= 30 && !isSnakeTop && !topBlocked) {
         clearInterval(snakeBottom)
         clearInterval(snakeRight)
@@ -234,6 +294,7 @@ document.addEventListener('keydown', (event) => {
 
         // Rotate the snake
         snakeHead.style.transform = `rotate(180deg)`
+        topElastic = true
     }
 });
 
