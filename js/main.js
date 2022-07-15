@@ -1,5 +1,5 @@
 var snake = document.getElementById("snake")
-var snakeHead = snake.childNodes[1]
+var snakeHead = snake.children[0]
 
 var left = 0,
     right = 0,
@@ -7,7 +7,14 @@ var left = 0,
     bottom = 0,
     boxSize = 30,
     borderSize = 2,
-    interval = 200
+    interval = 500,
+    index = 1
+
+for (let i = 0; i < snake.children.length; i++) {
+    const el = snake.children[i]
+    el.style.width = boxSize + "px"
+    el.style.height = boxSize + "px"
+}
 
 
 var grid = document.getElementById("grid"),
@@ -54,17 +61,13 @@ function moveRight() {
 
     eatFood()
 
-    for (let i = 2, t = 0, l = 0; i < snake.childNodes.length; i++) {
-        const el = snake.childNodes[i]
+    var nextLeftPos = left
+    for (let i = 0; i < snake.children.length - 1; i++) {
+        const nextEl = snake.children[i + 1]
 
-        if (el.nodeType === 1) {
-            t++
-            l++
-
-            l -= 1
-            el.style.left = left - (boxSize * t) + "px"
-            el.style.top = topPos - (boxSize * l) + "px"
-        }
+        nextLeftPos -= boxSize
+        nextEl.style.left = nextLeftPos + "px"
+        nextEl.style.top = topPos + "px"
     }
 }
 
@@ -78,17 +81,13 @@ function moveLeft() {
 
     eatFood()
 
-    for (let i = 2, t = 0, l = 0; i < snake.childNodes.length; i++) {
-        const el = snake.childNodes[i]
+    var nextLeftPos = left
+    for (let i = 0; i < snake.children.length - 1; i++) {
+        const nextEl = snake.children[i + 1]
 
-        if (el.nodeType === 1) {
-            t++
-            l++
-
-            l -= 1
-            el.style.left = left + (boxSize * t) + "px"
-            el.style.top = topPos - (boxSize * l) + "px"
-        }
+        nextLeftPos += boxSize
+        nextEl.style.left = nextLeftPos + "px"
+        nextEl.style.top = topPos + "px"
     }
 }
 
@@ -102,19 +101,17 @@ function moveUp() {
 
     eatFood()
 
-    for (let i = 2, t = 0, l = 0; i < snake.childNodes.length; i++) {
-        const el = snake.childNodes[i]
+    var nextTopPos = topPos
+    for (let i = 0; i < snake.children.length - 1; i++) {
+        const nextEl = snake.children[i + 1]
 
-        if (el.nodeType === 1) {
-            t++
-            l++
-
-            l -= 1
-            el.style.top = topPos + (boxSize * t) + "px"
-            el.style.left = left + (boxSize * l) + "px"
-        }
+        nextTopPos += boxSize
+        nextEl.style.top = nextTopPos + "px"
+        nextEl.style.left = left + "px"
     }
 }
+
+// var nextLeftPos = snakeHead.offsetLeft
 
 function moveDown() {
     if (topPos >= gridSize) {
@@ -124,20 +121,23 @@ function moveDown() {
     topPos += boxSize
     snakeHead.style.top = topPos + "px"
 
-    eatFood()
 
-    for (let i = 2, t = 0, l = 0; i < snake.childNodes.length; i++) {
-        const el = snake.childNodes[i]
+    for (let i = 0; i < snake.children.length - 1; i++) {
+        const el = snake.children[i]
+        const nextEl = snake.children[i + 1]
 
-        if (el.nodeType === 1) {
-            t++
-            l++
+        var nextLeftPos = nextEl.offsetLeft
+        if (nextLeftPos != left) {
+            nextLeftPos -= boxSize
 
-            l -= 1
-            el.style.top = topPos - (boxSize * t) + "px"
-            el.style.left = left - (boxSize * l) + "px"
+            nextEl.style.left = nextLeftPos + "px"
+        } else {
+            var nextTopPos = el.offsetTop
+            nextEl.style.top = nextTopPos + "px"
         }
     }
+
+    eatFood()
 }
 
 
@@ -233,6 +233,8 @@ document.addEventListener('keydown', (event) => {
 var food = document.createElement("div");
 food.classList.add("food")
 food.setAttribute("id", "food")
+food.style.width = boxSize + "px"
+food.style.height = boxSize + "px"
 
 grid.appendChild(food)
 
@@ -278,5 +280,8 @@ function eatFood() {
 function addTail() {
     var tail = document.createElement("div")
     tail.classList.add("snake-box")
+
+    tail.style.width = boxSize + "px"
+    tail.style.height = boxSize + "px"
     snake.appendChild(tail)
 }

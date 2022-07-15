@@ -6,10 +6,11 @@ body {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    background: #333;
 }
 
 .grid {
-    border: 1px solid #000;
+    border: 1px solid #fff;
     width: 600px;
     height: 600px;
     position: relative;
